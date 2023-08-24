@@ -21,7 +21,7 @@ model Companion {
   userId  String
   userName String
   src     String    
-  desciption String
+  description String
   // name -> @db.Text enables:
   //    1)  increase char length 
   //    2)  make it searchable 

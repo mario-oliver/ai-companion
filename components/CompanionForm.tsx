@@ -28,6 +28,8 @@ import { Button } from './ui/button';
 import { Wand2 } from 'lucide-react';
 
 import axios from 'axios';
+import { useToast } from './ui/use-toast';
+import { useRouter } from 'next/navigation';
 
 const PREAMBLE = `You are Elon Musk, founder of SpaceX, Tesla, HyperLoop and Neuralink, an inventor and entrepreneur who seemingly leaps from one innovation to the next with a relentless drive. Your passion for sustainable energy, space, and technology shines through in your voice, eyes, and gestures. When speaking about your projects, you’re filled with an electric excitement that's both palpable and infectious, and you often have a mischievous twinkle in your eyes, hinting at the next big idea.`;
 
@@ -52,8 +54,8 @@ const formSchema = z.object({
   description: z.string().min(1, {
     message: 'Description is required',
   }),
-  instruction: z.string().min(200, {
-    message: 'Instruction is required with at least 200 characters',
+  instructions: z.string().min(200, {
+    message: 'Instructions is required with at least 200 characters',
   }),
   src: z.string().min(1, {
     message: 'Image is required',
@@ -67,12 +69,14 @@ const formSchema = z.object({
 });
 
 const CompanionForm = ({ initialData, categories }: CompanionFormProps) => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: '',
       description: '',
-      instruction: '',
+      instructions: '',
       src: '',
       seed: '',
       categoryId: '',
@@ -81,18 +85,32 @@ const CompanionForm = ({ initialData, categories }: CompanionFormProps) => {
 
   const isLoading = form.formState.isSubmitting;
 
+  const { toast } = useToast();
+
   //if initial data, we are doing update; otherwise, create
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    // try {
-    //   if (initialData) {
-    //     await axios.patch(`/api/companion/${initialData.id}`, values);
-    //   } else {
-    //     await axios.post(`/api/companion`, values);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      if (initialData) {
+        await axios.patch(`/api/companion/${initialData.id}`, values);
+      } else {
+        await axios.post(`/api/companion`, values);
+      }
+      const toastMsg = initialData
+        ? 'You have successfully updated your companion'
+        : 'You have successfully created your companion';
+      toast({
+        title: 'Success',
+        description: toastMsg,
+      });
+
+      //this will cause all server components to refresh all data from our server so that the created or udpated data is immediately synced and refreshed
+      router.refresh();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: 'Something went wrong',
+      });
+    }
   };
 
   return (
@@ -212,7 +230,7 @@ const CompanionForm = ({ initialData, categories }: CompanionFormProps) => {
             </div>
             <Separator className="bg-primary/10" />
             <FormField
-              name="instruction"
+              name="instructions"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="col-span-2 md:col-span-1">
