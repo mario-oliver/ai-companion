@@ -2,6 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -13,4 +14,30 @@ datasource db {
 model Category {
   id      String @id @default(uuid())
   name    String
+  companions Companion[]
+}
+
+model Companion {
+  userId  String
+  userName String
+  src     String    
+  desciption String
+  // name -> @db.Text enables:
+  //    1)  increase char length 
+  //    2)  make it searchable 
+  name    String @db.Text
+  instructions    String @db.Text
+  seed    String @db.Text
+
+  // 1:1 relation
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id      String @id @default(uuid())
+  categoryId  String
+  category    Category @relation(fields : [categoryId], references: [id])
+  @@index([categoryId])
+
+//makes the name field searchable
+  @@fulltext([name])
 }
