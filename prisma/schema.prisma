@@ -40,4 +40,26 @@ model Companion {
 
 //makes the name field searchable
   @@fulltext([name])
+
+  messages Message[] 
+}
+
+enum Role {
+  user
+  system
+}
+
+model Message {
+  id      String @id @default(uuid())
+  role    Role
+  content String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  companionId String
+  userId      String
+
+//cascade delete will cause that if the user deletes the companion all the corresponding messages from that companion will also be deleted
+  companion   Companion @relation(fields: [companionId], references: [id], onDelete: Cascade)
+  @@index([companionId])
 }
