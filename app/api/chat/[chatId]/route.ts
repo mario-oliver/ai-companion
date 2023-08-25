@@ -103,7 +103,7 @@ export async function POST(
             await model
                 .call(
                     `
-                ONLY generate plain sentences without prefix of who is speaking. DO NOT use ${name} : prefix.
+                ONLY generate plain sentences without prefix of who is speaking. DO NOT use ${name} : prefix. DO NOT use ${name} at all, since you are speaking in first person use first person pronouns rather than your name/ ${name}.
 
                 ${companion.instructions}
 
