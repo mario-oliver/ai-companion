@@ -33,6 +33,7 @@ export class MemoryManager {
         companionFileName: string
     ) {
         const pineconeClient = <PineconeClient>this.vectorDBClient;
+
         const pineconeIndex = pineconeClient.Index(
             process.env.PINECONE_INDEX! || ''
         );
@@ -42,22 +43,22 @@ export class MemoryManager {
             { pineconeIndex }
         );
 
-        //run through memory to see if we can find similar existing docs
         const similarDocs = await vectorStore
             .similaritySearch(recentChatHistory, 3, {
                 fileName: companionFileName,
             })
             .catch((err) => {
-                console.log('failed to get vector search results', err);
+                console.log(
+                    'WARNING: failed to get vector search results.',
+                    err
+                );
             });
-
         return similarDocs;
     }
 
     public static async getInstance(): Promise<MemoryManager> {
         if (!MemoryManager.instance) {
             MemoryManager.instance = new MemoryManager();
-            //calling our init function from above
             await MemoryManager.instance.init();
         }
         return MemoryManager.instance;
@@ -74,12 +75,11 @@ export class MemoryManager {
         }
 
         const key = this.generateRedisCompanionKey(companionKey);
-        //history is an instance of redis
-        //zadd is a redis function
         const result = await this.history.zadd(key, {
             score: Date.now(),
             member: text,
         });
+
         return result;
     }
 
@@ -90,26 +90,25 @@ export class MemoryManager {
             console.log('Companion key set incorrectly');
             return '';
         }
+
         const key = this.generateRedisCompanionKey(companionKey);
         let result = await this.history.zrange(key, 0, Date.now(), {
             byScore: true,
         });
 
-        //embeddings return tokens which we need to do some special processing to be able to utilize
-        result.slice(-30).reverse();
+        result = result.slice(-30).reverse();
         const recentChats = result.reverse().join('\n');
         return recentChats;
     }
 
-    //func to see the chat history. two fields, instruction and seedchat -> used to create memory for our companion
     public async seedChatHistory(
-        seedContent: string,
+        seedContent: String,
         delimiter: string = '\n',
         companionKey: CompanionKey
     ) {
         const key = this.generateRedisCompanionKey(companionKey);
         if (await this.history.exists(key)) {
-            console.log('user already has chat history');
+            console.log('User already has chat history');
             return;
         }
 

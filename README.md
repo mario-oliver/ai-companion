@@ -41,5 +41,8 @@ Installation
 `npm i @upstash/ratelimit`
 `npm i langchain`
 `npm i ai`
+`npm i openai`
+`npm i replicate`
+`npm i openai-edge`
 
 Vercel AI SDK (package ai) allows us to stream input's improving the user experience -> https://sdk.vercel.ai/docs/concepts/streaming. In our case, we are working with the langchain version.
