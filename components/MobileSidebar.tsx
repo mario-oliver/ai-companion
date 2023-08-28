@@ -5,8 +5,11 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Sidebar from './Sidebar';
 import { checkSubscription } from '@/lib/subscription';
 
-const MobileSidebar = async () => {
-    const isPro = await checkSubscription();
+interface MobileSidebarProps {
+    isPro: boolean;
+}
+
+const MobileSidebar = ({ isPro = false }: MobileSidebarProps) => {
     return (
         <Sheet>
             <SheetTrigger className="md:hidden pr-4">
