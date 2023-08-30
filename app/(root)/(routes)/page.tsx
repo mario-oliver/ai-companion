@@ -3,7 +3,7 @@ import React from 'react';
 import prismadb from '@/lib/prismadb';
 import Categories from '@/components/Categories';
 import Companions from '@/components/Companions';
-import Processing from '@/components/Processing';
+import Processing from '@/components/VideoProcessingButton';
 
 interface RootPageProps {
     //every server component has access to teh searchParams

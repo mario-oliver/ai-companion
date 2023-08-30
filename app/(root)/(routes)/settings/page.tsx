@@ -1,6 +1,7 @@
 import { checkSubscription } from '@/lib/subscription';
 import React from 'react';
 import SubscriptionButton from '@/components/SubscriptionButton';
+import VideoProcessingButton from '@/components/VideoProcessingButton';
 
 const SettingsPage = async () => {
     const isPro = await checkSubscription();
@@ -13,6 +14,7 @@ const SettingsPage = async () => {
                     : 'You are currently on a free plan'}
             </div>
             <SubscriptionButton isPro={isPro} />
+            <VideoProcessingButton />
         </div>
     );
 };
