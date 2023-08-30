@@ -33,12 +33,16 @@ const setYTDlp = async () => {
     // ytDlpWrap.setBinaryPath(libFolderPath);
 };
 
-interface VideoProps {
+interface YTDLPProps {
     url: string;
-    title: string;
+    pathToVid: string;
 }
 
-const downloadVideo = async ({ url, title }: VideoProps) => {
+interface FFMpegProps {
+    pathToVid: string;
+}
+
+const downloadVideo = async ({ url, pathToVid }: YTDLPProps) => {
     const ytDlpWrap = await setYTDlp();
 
     //this fails because it wants to check certificates
@@ -48,14 +52,7 @@ const downloadVideo = async ({ url, title }: VideoProps) => {
 
     //TODO: remove this --no-check-cert before production release
     let ytDlpEventEmitter = ytDlpWrap
-        .exec([
-            '--no-check-certificates',
-            url,
-            '-f',
-            'best',
-            '-o',
-            `video/output/${title}.mp4`,
-        ])
+        .exec(['--no-check-certificates', url, '-f', 'best', '-o', pathToVid])
         .on('progress', (progress: any) =>
             console.log(
                 progress.percent,
@@ -73,9 +70,27 @@ const downloadVideo = async ({ url, title }: VideoProps) => {
     console.log('PID: ', ytDlpEventEmitter?.ytDlpProcess?.pid);
 };
 
+// const ffmpegProcessing = async ({ pathToVid }: FFMpegProps) => {
+//     try {
+//         var process = new ffmpeg(pathToVid);
+//         process.then(
+//             function (video: any) {
+//                 console.log('The video is ready to be processed');
+//             },
+//             function (err: any) {
+//                 console.log('Error: ' + err);
+//             }
+//         );
+//     } catch (e: any) {
+//         console.log(e.code);
+//         console.log(e.msg);
+//     }
+// };
+
 export const videoProcess = async () => {
     const url = 'https://www.youtube.com/watch?v=26Mayv5JPz0';
     const randomNumber = Math.floor(Math.random() * 1001); // Generates a number between 0 and 1000
     const title = `title${randomNumber}`;
-    return downloadVideo({ url, title });
+    var pathToVid = `video/output/${title}.mp4`;
+    return await downloadVideo({ url, pathToVid });
 };

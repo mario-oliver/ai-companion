@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { videoProcess } from '@/lib/video';
 import { useToast } from './ui/use-toast';
 import axios from 'axios';
 
@@ -13,7 +12,8 @@ const VideoProcessingButton = () => {
     const beginProcessing = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/video');
+            // const response = await axios.get('/api/video');
+            const response = await axios.get('/api/video/external');
             console.log(response);
         } catch (error) {
             toast({

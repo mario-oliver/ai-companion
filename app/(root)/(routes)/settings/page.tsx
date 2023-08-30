@@ -14,7 +14,7 @@ const SettingsPage = async () => {
                     : 'You are currently on a free plan'}
             </div>
             <SubscriptionButton isPro={isPro} />
-            <VideoProcessingButton />
+            {/* <VideoProcessingButton /> */}
         </div>
     );
 };
